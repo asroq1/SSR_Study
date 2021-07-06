@@ -2,6 +2,7 @@ import React from 'react'
 import 'antd/dist/antd.css'
 import PropTypes from 'prop-types'
 import Head from 'next/head'
+import wrapper from '../store/configureStore'
 const Devicii = ({ Component }) => {
 	return (
 		<>
@@ -16,4 +17,4 @@ const Devicii = ({ Component }) => {
 Devicii.propTypes = {
 	Components: PropTypes.elementType.isRequired,
 }
-export default Devicii
+export default wrapper.withRedux(Devicii)
