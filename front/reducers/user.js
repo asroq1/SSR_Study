@@ -1,8 +1,8 @@
 const initialState = {
 	isLoggedIn: false,
-	user: null,
 	signUpData: {},
 	loginData: {},
+	me: null,
 }
 
 //액션 크리에이터
@@ -25,13 +25,13 @@ const reducer = (state = initialState, action) => {
 			return {
 				...state,
 				isLoggedIn: true,
-				user: action.data,
+				me: action.data,
 			}
 		case 'LOG_OUT':
 			return {
 				...state,
 				isLoggedIn: false,
-				user: null,
+				me: null,
 			}
 		default:
 			return state

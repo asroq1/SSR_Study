@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useState } from 'react'
 import { Form, Input, Button } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
 import { addPost } from '../reducers/post'
-
+import CommentForm from './CommentForm'
 const PostForm = () => {
 	const { imagePaths } = useSelector(state => state.post)
 	const dispatch = useDispatch()
