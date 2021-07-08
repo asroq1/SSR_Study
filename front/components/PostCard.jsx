@@ -11,6 +11,7 @@ import {
 } from '@ant-design/icons'
 import { useSelector } from 'react-redux'
 import CommentForm from './CommentForm'
+import PostCardContent from './PostCardContent'
 const PostCard = ({ post }) => {
 	const { me } = useSelector(state => state.user)
 	const id = me && me.id
@@ -62,7 +63,7 @@ const PostCard = ({ post }) => {
 				<Card.Meta
 					avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
 					title={post.User.nickname}
-					description={post.content}
+					description={<PostCardContent postData={post.content} />}
 				/>
 			</Card>
 			{commentFormOpen && (

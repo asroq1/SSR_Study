@@ -7,15 +7,37 @@ const initialState = {
 
 //액션 크리에이터
 
-export const loginAction = data => {
+export const loginRequestAction = data => {
 	return {
-		type: 'LOG_IN',
+		type: 'LOG_IN_REQUEST',
 		data,
 	}
 }
-export const logOutAction = data => {
+export const loginSuccessAction = data => {
 	return {
-		type: 'LOG_OUT',
+		type: 'LOG_IN_SUCCESS',
+		data,
+	}
+}
+export const loginFailureAction = data => {
+	return {
+		type: 'LOG_IN_FAILURE',
+		data,
+	}
+}
+export const logOutRequestAction = data => {
+	return {
+		type: 'LOG_OUT_REQUEST',
+	}
+}
+export const logOutSuccessAction = data => {
+	return {
+		type: 'LOG_OUT_SUCCESS',
+	}
+}
+export const logOutFailureAction = data => {
+	return {
+		type: 'LOG_OUT_FAILURE',
 	}
 }
 
