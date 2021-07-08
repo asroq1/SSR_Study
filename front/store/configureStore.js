@@ -3,7 +3,7 @@ import { applyMiddleware, compose, createStore } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import createSagaMiddleware from 'redux-saga'
 import reducer from '../reducers'
-import rootSagas from '../sagas'
+import rootSaga from '../sagas'
 const configureStrore = () => {
 	const sagaMiddleware = createSagaMiddleware()
 	const middlewares = [sagaMiddleware]
@@ -14,7 +14,7 @@ const configureStrore = () => {
 
 	const store = createStore(reducer, enhancer)
 
-	store.sagaTask = sagaMiddleware.run(rootSagas)
+	store.sagaTask = sagaMiddleware.run(rootSaga)
 	return store
 }
 
