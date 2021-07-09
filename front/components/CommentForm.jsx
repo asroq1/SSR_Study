@@ -2,11 +2,26 @@ import React, { useCallback } from 'react'
 import { Form, Input, Button } from 'antd'
 import useInput from '../hooks/useInput'
 import PropTypes from 'prop-types'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { ADD_COMMENT_REQUEST } from '../reducers/post'
 const CommentForm = ({ post }) => {
 	const id = useSelector(state => state.user.me?.id)
-	const [commentText, onChangeCommentText] = useInput('')
-	const onSubmitComment = useCallback(() => {}, [commentText])
+	const dispatch = useDispatch()
+	const { addCommentDone } = useSelector(state => state.post)
+	const [commentText, onChangeCommentText, setCommentText] = useInput('')
+
+	useEffect(() => {
+		if (addCommentDone) {
+			setCommentText('')
+		}
+	}, [addCommentDone])
+	const onSubmitComment = useCallback(() => {
+		dispatch({
+			type: ADD_COMMENT_REQUEST,
+			data: { content: commentText, postId: post.id, userId: id },
+		})
+	}, [commentText, id])
+
 	return (
 		<Form onFinish={onSubmitComment}>
 			<Form.Item style={{ position: 'relative', margin: 0 }}>
@@ -20,7 +35,7 @@ const CommentForm = ({ post }) => {
 					type="primary"
 					htmlType="submit"
 				>
-					삐약
+					Howls
 				</Button>
 			</Form.Item>
 		</Form>
