@@ -1,23 +1,23 @@
 const initialState = {
-	// logIn
-	loginLoading: false,
-	loginDone: false,
-	loginError: false,
-	//logOut
-	logOutLoading: false,
-	logOutDone: false,
-	logOutError: null,
-	//signUp
-	signUpLoading: false,
-	signUpDone: false,
-	signUpError: null,
-	//nickName
-	changeNickNameLoading: false,
-	changeNickNameDone: false,
-	changeNickNameError: null,
-	signUpData: {},
-	loginData: {},
-	me: null,
+  // logIn
+  loginLoading: false,
+  loginDone: false,
+  loginError: false,
+  //logOut
+  logOutLoading: false,
+  logOutDone: false,
+  logOutError: null,
+  //signUp
+  signUpLoading: false,
+  signUpDone: false,
+  signUpError: null,
+  //nickName
+  changeNickNameLoading: false,
+  changeNickNameDone: false,
+  changeNickNameError: null,
+  signUpData: {},
+  loginData: {},
+  me: null,
 }
 
 //액션 변수
@@ -47,118 +47,126 @@ export const CHANGE_NICKNAME_FAILURE = 'CHANGE_NICKNAME_FAILURE'
 //액션 크리에이터
 
 const dummyUser = data => ({
-	...data,
-	nickname: 'devicii',
-	id: 1,
-	Posts: [],
-	Followings: [],
-	Followers: [],
+  ...data,
+  nickname: 'devicii',
+  id: 1,
+  Posts: [{ id: 1 }],
+  Followings: [
+    { nickname: '부기초' },
+    { nickname: 'Chanho Lee' },
+    { nickname: 'neue zeal' },
+  ],
+  Followers: [
+    { nickname: '부기초' },
+    { nickname: 'Chanho Lee' },
+    { nickname: 'neue zeal' },
+  ],
 })
 export const loginRequestAction = data => {
-	return {
-		type: LOG_IN_REQUEST,
-		data,
-	}
+  return {
+    type: LOG_IN_REQUEST,
+    data,
+  }
 }
 
 export const logOutRequestAction = () => {
-	return {
-		type: LOG_OUT_REQUEST,
-	}
+  return {
+    type: LOG_OUT_REQUEST,
+  }
 }
 
 export const changeNicknameAction = data => {
-	return {
-		type: CHANGE_NICKNAME_REQUEST,
-		data,
-	}
+  return {
+    type: CHANGE_NICKNAME_REQUEST,
+    data,
+  }
 }
 const reducer = (state = initialState, action) => {
-	switch (action.type) {
-		case LOG_IN_REQUEST:
-			return {
-				...state,
-				loginLoading: true,
-				loginError: null,
-				loginDone: false,
-			}
-		case LOG_IN_SUCCESS:
-			return {
-				...state,
-				loginLoading: false,
-				loginDone: false,
-				me: dummyUser(action.data),
-			}
-		case LOG_IN_FAILURE:
-			return {
-				...state,
-				loginDone: false,
-				loginDone: false,
-				loginError: action.error,
-				me: action.data,
-			}
-		case LOG_OUT_REQUEST:
-			return {
-				...state,
-				logOutLoading: true,
-				logOutDone: false,
-				logOutError: null,
-			}
-		case LOG_OUT_SUCCESS:
-			return {
-				...state,
-				logOutLoading: false,
-				logOutDone: true,
-				me: null,
-			}
-		case LOG_OUT_FAILURE:
-			return {
-				...state,
-				logOutLoading: false,
-				logOutError: action.error,
-			}
+  switch (action.type) {
+    case LOG_IN_REQUEST:
+      return {
+        ...state,
+        loginLoading: true,
+        loginError: null,
+        loginDone: false,
+      }
+    case LOG_IN_SUCCESS:
+      return {
+        ...state,
+        loginLoading: false,
+        loginDone: false,
+        me: dummyUser(action.data),
+      }
+    case LOG_IN_FAILURE:
+      return {
+        ...state,
+        loginDone: false,
+        loginDone: false,
+        loginError: action.error,
+        me: action.data,
+      }
+    case LOG_OUT_REQUEST:
+      return {
+        ...state,
+        logOutLoading: true,
+        logOutDone: false,
+        logOutError: null,
+      }
+    case LOG_OUT_SUCCESS:
+      return {
+        ...state,
+        logOutLoading: false,
+        logOutDone: true,
+        me: null,
+      }
+    case LOG_OUT_FAILURE:
+      return {
+        ...state,
+        logOutLoading: false,
+        logOutError: action.error,
+      }
 
-		case SIGN_UP_REQUEST:
-			return {
-				...state,
-				signUpLoading: true,
-				signUpDone: false,
-				signUpError: null,
-			}
-		case SIGN_UP_SUCCESS:
-			return {
-				...state,
-				signUpLoading: false,
-				signUpDone: true,
-			}
-		case SIGN_UP_FAILURE:
-			return {
-				...state,
-				signUpLoading: false,
-				signUpError: action.error,
-			}
-		case CHANGE_NICKNAME_REQUEST:
-			return {
-				...state,
-				changeNickNameLoading: true,
-				changeNickNameDone: false,
-				changeNickNameError: null,
-			}
-		case CHANGE_NICKNAME_SUCCESS:
-			return {
-				...state,
-				changeNickNameLoading: false,
-				changeNickNameDone: true,
-			}
-		case CHANGE_NICKNAME_FAILURE:
-			return {
-				...state,
-				changeNickNameLoading: false,
-				changeNickNameError: action.error,
-			}
-		default:
-			return state
-	}
+    case SIGN_UP_REQUEST:
+      return {
+        ...state,
+        signUpLoading: true,
+        signUpDone: false,
+        signUpError: null,
+      }
+    case SIGN_UP_SUCCESS:
+      return {
+        ...state,
+        signUpLoading: false,
+        signUpDone: true,
+      }
+    case SIGN_UP_FAILURE:
+      return {
+        ...state,
+        signUpLoading: false,
+        signUpError: action.error,
+      }
+    case CHANGE_NICKNAME_REQUEST:
+      return {
+        ...state,
+        changeNickNameLoading: true,
+        changeNickNameDone: false,
+        changeNickNameError: null,
+      }
+    case CHANGE_NICKNAME_SUCCESS:
+      return {
+        ...state,
+        changeNickNameLoading: false,
+        changeNickNameDone: true,
+      }
+    case CHANGE_NICKNAME_FAILURE:
+      return {
+        ...state,
+        changeNickNameLoading: false,
+        changeNickNameError: action.error,
+      }
+    default:
+      return state
+  }
 }
 
 export default reducer
