@@ -9,15 +9,17 @@ import {
   EllipsisOutlined,
   HeartTwoTone,
 } from '@ant-design/icons'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import CommentForm from './CommentForm'
 import PostCardContent from './PostCardContent'
+import { REMOVE_POST_REQUEST } from '../reducers/post'
 const PostCard = ({ post }) => {
   const { me } = useSelector(state => state.user)
+  const { removePostLoading } = useSelector(state => state.post)
   const id = me && me.id
   const [liked, setLiked] = useState(false)
   const [commentFormOpen, setCommentFormOpen] = useState(false)
-
+  const dispatch = useDispatch()
   const onToggleLike = useCallback(() => {
     setLiked(prev => !prev)
   }, [])
@@ -25,6 +27,14 @@ const PostCard = ({ post }) => {
   const onToggleComment = useCallback(() => {
     setCommentFormOpen(prev => !prev)
   }, [])
+
+  const onRemovePost = useCallback(() => {
+    dispatch({
+      type: REMOVE_POST_REQUEST,
+      data: post.id,
+    })
+  }, [])
+
   return (
     <div style={{ marginBottom: 10 }}>
       <Card
@@ -45,10 +55,16 @@ const PostCard = ({ post }) => {
             key="more"
             content={
               <Button.Group>
-                {id && post.UserId === id ? (
+                {id && post.User.id === id ? (
                   <>
                     <Button>수정</Button>
-                    <Button type="danger">삭제</Button>
+                    <Button
+                      type="danger"
+                      onClick={onRemovePost}
+                      loading={removePostLoading}
+                    >
+                      삭제
+                    </Button>
                   </>
                 ) : (
                   <Button>신고</Button>

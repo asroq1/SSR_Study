@@ -44,6 +44,10 @@ export const UNFOLLOW_FAILURE = 'UNFOLLOW_FAILURE'
 export const CHANGE_NICKNAME_REQUEST = 'CHANGE_NICKNAME_REQUEST'
 export const CHANGE_NICKNAME_SUCCESS = 'CHANGE_NICKNAME_SUCCESS'
 export const CHANGE_NICKNAME_FAILURE = 'CHANGE_NICKNAME_FAILURE'
+
+export const ADD_POST_TO_ME = 'ADD_POST_TO_ME'
+export const REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME'
+
 //액션 크리에이터
 
 const dummyUser = data => ({
@@ -163,6 +167,22 @@ const reducer = (state = initialState, action) => {
         ...state,
         changeNickNameLoading: false,
         changeNickNameError: action.error,
+      }
+    case ADD_POST_TO_ME:
+      return {
+        ...state,
+        me: {
+          ...state.me,
+          Posts: [{ id: action.data }, ...state.me.Posts],
+        },
+      }
+    case REMOVE_POST_OF_ME:
+      return {
+        ...state,
+        me: {
+          ...state.me,
+          Posts: state.me.Posts.filter(v => v.id !== action.data),
+        },
       }
     default:
       return state
