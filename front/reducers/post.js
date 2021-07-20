@@ -77,14 +77,28 @@ export const addComment = data => ({
 })
 
 const dummyPost = data => ({
+<<<<<<< HEAD
   id: data.id,
   content: data.content,
+=======
+  id: shortId.generate(),
+  content: data,
+>>>>>>> 228972737b3154c5fed844ae4878bf475ab32ede
   User: {
     id: 1,
     nickname: '제로초',
   },
   Images: [],
   Comments: [],
+})
+
+const dummyComment = data => ({
+  id: shortId.generate(),
+  content: data,
+  User: {
+    id: 1,
+    nickname: 'devicii',
+  },
 })
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -129,6 +143,7 @@ const reducer = (state = initialState, action) => {
     case REMOVE_POST_FAILURE:
       return {
         ...state,
+<<<<<<< HEAD
         mainPosts: [dummyPost, ...state.mainPosts],
         removeCommentDone: false,
         removeCommentLoading: false,
@@ -143,13 +158,30 @@ const reducer = (state = initialState, action) => {
     //     removeCommentError: null,
     //   }
     case ADD_COMMENT_SUCCESS:
-      return {
-        ...state,
-        mainPosts: [dummyPost, ...state.mainPosts],
-        addCommentDone: true,
-        addCommentLoading: false,
+=======
+        addCommentLoading: true,
+        addCommentDone: false,
         addCommentError: null,
       }
+
+    case ADD_COMMENT_SUCCESS: {
+      const postIndex = state.mainPosts.findIndex(
+        data => data.id === action.data.postId
+      )
+      const post = { ...state.mainPosts[postIndex] }
+      post.Comments = [dummyComment(action.data.content), ...post.Comments]
+      const mainPosts = [...state.mainPosts]
+      mainPosts[postIndex] = post
+>>>>>>> 228972737b3154c5fed844ae4878bf475ab32ede
+      return {
+        ...state,
+        mainPosts,
+        addCommentLoading: false,
+        addCommentDone: true,
+        addCommentError: action.error,
+      }
+    }
+
     case ADD_COMMENT_FAILURE:
       return {
         ...state,
