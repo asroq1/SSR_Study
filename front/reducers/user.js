@@ -1,5 +1,13 @@
 import produce from 'immer'
 const initialState = {
+  //follow
+  followLoading: false,
+  followDone: false,
+  followError: false,
+  //unfollow
+  unfollowLoading: false,
+  unfollowDone: false,
+  unfollowError: false,
   // logIn
   loginLoading: false,
   loginDone: false,
@@ -89,6 +97,38 @@ export const changeNicknameAction = data => {
 const reducer = (state = initialState, action) => {
   return produce(state, draft => {
     switch (action.type) {
+      case FOLLOW_REQUEST:
+        draft.followLoading = true
+        draft.followError = null
+        draft.followDone = false
+        break
+      case FOLLOW_SUCCESS:
+        draft.followLoading = false
+        draft.followDone = false
+        draft.me.Followings.push({ id: action.data })
+        break
+      case FOLLOW_FAILURE:
+        draft.followDone = false
+        draft.followError = action.error
+
+        break
+      case UNFOLLOW_REQUEST:
+        draft.unfollowLoading = true
+        draft.unfollowError = null
+        draft.unfollowDone = false
+        break
+      case UNFOLLOW_SUCCESS:
+        draft.unfollowLoading = false
+        draft.unfollowDone = false
+        draft.me.Followings = draft.me.Followings.filter(
+          v => v.id === post.User.id
+        )
+        break
+      case UNFOLLOW_FAILURE:
+        draft.unfollowDone = false
+        draft.unfollowError = action.error
+
+        break
       case LOG_IN_REQUEST:
         draft.loginLoading = true
         draft.loginError = null

@@ -1,4 +1,4 @@
-import { all, fork, put, takeLatest, delay } from 'redux-saga/effects'
+import { all, fork, put, takeLatest, delay, throttle } from 'redux-saga/effects'
 import axios from 'axios'
 import shortId from 'shortid'
 import {
@@ -8,13 +8,39 @@ import {
   ADD_POST_FAILURE,
   ADD_POST_REQUEST,
   ADD_POST_SUCCESS,
+  generateDummyPost,
+  LOAD_POST_FAILURE,
+  LOAD_POST_REQUEST,
+  LOAD_POST_SUCCESS,
   REMOVE_POST_FAILURE,
   REMOVE_POST_REQUEST,
   REMOVE_POST_SUCCESS,
 } from '../reducers/post'
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user'
 
-export default function* postSaga() {
+export default function* rootSaga() {
+  function loadPostAPI(action) {
+    return axios.get('/api/post', action.data)
+  }
+
+  function* loadPost(action) {
+    try {
+      // const result = yield call(loadPostAPI, action.data)
+      yield delay(1000)
+      const id = shortId.generate()
+      yield put({
+        type: LOAD_POST_SUCCESS,
+        data: generateDummyPost(10),
+      })
+    } catch (error) {
+      //PUT은 Dispatch라고 생각하자
+      yield put({
+        type: LOAD_POST_FAILURE,
+        data: error.response.data,
+      })
+    }
+  }
+
   function addPostAPI(action) {
     return axios.post('/api/post', action.data)
   }
@@ -101,5 +127,13 @@ export default function* postSaga() {
   function* watchAddComment() {
     yield takeLatest(ADD_COMMENT_REQUEST, addComment)
   }
-  yield all([fork(watchRemovePost), fork(watchAddPost), fork(watchAddComment)])
+  function* watchLoadPost() {
+    yield throttle(2000, LOAD_POST_REQUEST, loadPost)
+  }
+  yield all([
+    fork(watchRemovePost),
+    fork(watchAddPost),
+    fork(watchAddComment),
+    fork(watchLoadPost),
+  ])
 }

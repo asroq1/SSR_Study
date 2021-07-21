@@ -1,5 +1,7 @@
 import shortId from 'shortid'
 import produce from 'immer'
+import faker from 'faker'
+
 export const initialState = {
   mainPosts: [
     {
@@ -44,18 +46,53 @@ export const initialState = {
     },
   ],
   imagePaths: [],
+  loadPostDone: false,
+  loadPostLoading: false,
+  loadPostError: null,
   addPostDone: false,
   addPostLoading: false,
   addPostError: null,
-
   removePostDone: false,
   removePostLoading: false,
   removePostError: null,
-
   addCommentDone: false,
   addCommentLoading: false,
   addCommentError: null,
+  hasMorePost: true,
 }
+
+export const generateDummyPost = number =>
+  Array(10)
+    .fill()
+    .map(() => ({
+      id: shortId.generate(),
+      User: {
+        id: shortId.generate(),
+        nickname: faker.name.findName(),
+      },
+      content: faker.lorem.paragraph(),
+      Images: [
+        {
+          src: faker.image.image(),
+        },
+      ],
+      Comments: [
+        {
+          User: {
+            id: shortId.generate(),
+            nickname: faker.name.findName(),
+          },
+          content: faker.lorem.sentence(),
+        },
+      ],
+    }))
+
+// initialState.mainPosts = initialState.mainPosts.concat(generateDummyPost(10))
+
+export const LOAD_POST_REQUEST = 'LOAD_POST_REQUEST'
+export const LOAD_POST_SUCCESS = 'LOAD_POST_SUCCESS'
+export const LOAD_POST_FAILURE = 'LOAD_POST_FAILURE'
+
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST'
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS'
 export const ADD_POST_FAILURE = 'ADD_POST_FAILURE'
@@ -101,6 +138,21 @@ const dummyComment = data => ({
 const reducer = (state = initialState, action) => {
   return produce(state, draft => {
     switch (action.type) {
+      case LOAD_POST_REQUEST:
+        draft.loadPostLoading = true
+        draft.loadPostDone = false
+        break
+      case LOAD_POST_SUCCESS:
+        draft.loadPostDone = true
+        draft.loadPostLoading = false
+        draft.hasMorePost = draft.mainPosts.length < 50
+        draft.mainPosts = action.data.concat(draft.mainPosts)
+        break
+      case LOAD_POST_FAILURE:
+        draft.loadPostDone = false
+        draft.loadPostLoading = false
+        draft.loadPostError = action.error
+        break
       case ADD_POST_REQUEST:
         draft.addPostLoading = true
         draft.addPostDone = false
@@ -113,14 +165,14 @@ const reducer = (state = initialState, action) => {
         draft.addPostError = null
         break
       case ADD_POST_FAILURE:
-        draft.addCommentDone = false
-        draft.addCommentLoading = false
-        draft.addCommentError = action.error
-        break
-      case ADD_POST_REQUEST:
-        draft.addPostLoading = true
         draft.addPostDone = false
-        draft.addPostError = null
+        draft.addPostLoading = false
+        draft.addPostError = action.error
+        break
+      case REMOVE_POST_REQUEST:
+        draft.removePostLoading = true
+        draft.removePostDone = false
+        draft.removePostError = null
         break
       case REMOVE_POST_SUCCESS:
         draft.mainPosts = draft.mainPosts.filter(v => v.id !== action.data)

@@ -1,17 +1,41 @@
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import AppLayout from '../components/AppLayout'
 import PostForm from '../components/PostForm'
 import PostCard from '../components/PostCard'
 import { useEffect } from 'react'
+import { LOAD_POST_REQUEST } from '../reducers/post'
 const home = () => {
   const { me } = useSelector(state => state.user)
-  const { mainPosts } = useSelector(state => state.post)
-
+  const { mainPosts, hasMorePost, loadPostLoading } = useSelector(
+    state => state.post
+  )
+  const dispatch = useDispatch()
   useEffect(() => {
-    mainPosts.map(post => {
-      console.log(post.Images[0])
+    dispatch({
+      type: LOAD_POST_REQUEST,
     })
   }, [])
+  // scrollY : 내린 길이의 총합
+  // clientHeight: 보이는 화면의 길이
+  // scrollHeight: 브라우저 창의총 길이
+  useEffect(() => {
+    function onScroll() {
+      if (
+        window.scrollY + document.documentElement.clientHeight >
+        document.documentElement.scrollHeight - 300
+      ) {
+        if (hasMorePost && !loadPostLoading) {
+          dispatch({
+            type: LOAD_POST_REQUEST,
+          })
+        }
+      }
+    }
+    window.addEventListener('scroll', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [hasMorePost, loadPostLoading])
   return (
     <AppLayout>
       {me && <PostForm />}
