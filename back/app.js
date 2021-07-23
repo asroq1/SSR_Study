@@ -1,6 +1,14 @@
 const express = require('express')
 const app = express()
 const postRouter = require('./routes/post')
+const db = require('./models')
+db.sequelize
+  .sync()
+  .then(() => {
+    console.log('DB Connected...')
+  })
+  .catch(console.error)
+
 app.get('/', (req, res) => {
   res.send('hello express')
 })
@@ -30,5 +38,5 @@ app.get('/posts', (req, res) => {
 app.use('/post', postRouter)
 
 app.listen(3065, () => {
-  console.log('on Server ...')
+  console.log('on Server ...!')
 })
