@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 const postRouter = require('./routes/post')
+const userRouter = require('./routes/user')
+const cors = require('cors')
 const db = require('./models')
 db.sequelize
   .sync()
@@ -8,6 +10,15 @@ db.sequelize
     console.log('DB Connected...')
   })
   .catch(console.error)
+
+app.use(
+  cors({
+    origin: true,
+    credentials: false,
+  })
+)
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
   res.send('hello express')
@@ -36,6 +47,7 @@ app.get('/posts', (req, res) => {
 
 //How to set Prefix
 app.use('/post', postRouter)
+app.use('/user', userRouter)
 
 app.listen(3065, () => {
   console.log('on Server ...!')
