@@ -19,17 +19,16 @@ import {
 } from '../reducers/user'
 
 function loginAPI(data) {
-  return axios.post('/api/login', data)
+  return axios.post('/user/login', data)
 }
 
 function* logIn(action) {
   try {
-    // const result = yield call(loginAPI, action.data)
-    yield delay(1000)
+    const result = yield call(loginAPI, action.data)
+    console.log('RES', result.data)
     yield put({
       type: LOG_IN_SUCCESS,
-      // data: result.data,
-      data: action.data,
+      data: result.data,
     })
   } catch (error) {
     //PUT은 Dispatch라고 생각하자
@@ -41,13 +40,12 @@ function* logIn(action) {
 }
 
 function logoutAPI() {
-  return axios.post('/api/logout')
+  return axios.post('/user/logout')
 }
 
 function* logOut() {
   try {
-    // const result = yield call(logoutAPI)
-    yield delay(1000)
+    call(logoutAPI)
     yield put({
       type: LOG_OUT_SUCCESS,
     })
@@ -61,13 +59,13 @@ function* logOut() {
 }
 
 function signUpAPI(data) {
-  return axios.post('http://localhost:3065/user', data)
+  return axios.post('/user', data)
 }
 
 function* signUp(action) {
   try {
     const result = yield call(signUpAPI, action.data)
-    console.log(result)
+    console.log('Res', result.data)
     yield put({
       type: SIGN_UP_SUCCESS,
     })

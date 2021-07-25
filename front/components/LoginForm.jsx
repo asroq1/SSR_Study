@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { Form, Input, Button } from 'antd'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
@@ -14,7 +14,7 @@ const FormWrapper = styled(Form)`
   padding: 10px;
 `
 const LoginForm = () => {
-  const { loginLoading } = useSelector(state => state.user)
+  const { loginLoading, loginError } = useSelector(state => state.user)
   const dispatch = useDispatch()
   const [email, onChangeEmail] = useInput('')
   const [password, onChangePwd] = useInput('')
@@ -22,10 +22,15 @@ const LoginForm = () => {
   const onSubmitForm = useCallback(() => {
     dispatch({
       type: LOG_IN_REQUEST,
-      data: email,
-      password,
+      data: { email, password },
     })
   }, [email, password])
+
+  useEffect(() => {
+    if (loginError) {
+      alert(loginError)
+    }
+  }, [loginError])
   return (
     <FormWrapper onFinish={onSubmitForm}>
       <div>
