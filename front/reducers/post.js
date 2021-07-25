@@ -114,26 +114,6 @@ export const addComment = data => ({
   data,
 })
 
-const dummyPost = data => ({
-  id: data.id,
-  content: data.content,
-  User: {
-    id: 1,
-    nickname: '제로초',
-  },
-  Images: [],
-  Comments: [],
-})
-
-const dummyComment = data => ({
-  id: shortId.generate(),
-  content: data,
-  User: {
-    id: 1,
-    nickname: 'devicii',
-  },
-})
-
 //리듀서란 이전 상태를 액션을 통해 다음 상태로 만들어내는 함수(불변성 유지가 중요.)
 const reducer = (state = initialState, action) => {
   return produce(state, draft => {
@@ -159,7 +139,7 @@ const reducer = (state = initialState, action) => {
         draft.addPostError = null
         break
       case ADD_POST_SUCCESS:
-        draft.mainPosts.unshift(dummyPost(action.data))
+        draft.mainPosts.unshift(action.data)
         draft.addPostDone = true
         draft.addPostLoading = false
         draft.addPostError = null
@@ -192,8 +172,8 @@ const reducer = (state = initialState, action) => {
         draft.removeCommentError = null
         break
       case ADD_COMMENT_SUCCESS:
-        const post = draft.mainPosts.find(v => v.id === action.data.postId)
-        post.Comments.unshift(dummyComment(action.data.content))
+        const post = draft.mainPosts.find(v => v.id === action.data.PostId)
+        post.Comments.unshift(action.data)
         draft.addCommentLoading = false
         draft.addCommentDone = true
         break

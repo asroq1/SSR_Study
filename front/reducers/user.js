@@ -140,7 +140,7 @@ const reducer = (state = initialState, action) => {
         draft.me = action.data
         break
       case LOG_IN_FAILURE:
-        draft.loginDone = false
+        draft.loginLoading = false
         draft.loginDone = false
         draft.loginError = action.error
         draft.me = action.data
