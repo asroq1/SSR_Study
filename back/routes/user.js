@@ -5,6 +5,42 @@ const bcrypt = require('bcrypt')
 const passport = require('passport')
 const router = express.Router()
 
+router.get('/', async (req, res, next) => {
+  // GET /user
+  try {
+    if (req.user) {
+      const fullUserWithoutPassword = await User.findOne({
+        where: { id: req.user.id },
+        attributes: {
+          exclude: ['password'],
+        },
+        include: [
+          {
+            model: Post,
+            attributes: ['id'],
+          },
+          {
+            model: User,
+            as: 'Followings',
+            attributes: ['id'],
+          },
+          {
+            model: User,
+            as: 'Followers',
+            attributes: ['id'],
+          },
+        ],
+      })
+      res.status(200).json(fullUserWithoutPassword)
+    } else {
+      res.status(200).json(null)
+    }
+  } catch (error) {
+    console.error(error)
+    next(error)
+  }
+})
+
 router.post('/login', isNotLoggedIn, (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
@@ -27,14 +63,17 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
         include: [
           {
             model: Post,
+            attributes: ['id'],
           },
           {
             model: User,
             as: 'Followings',
+            attributes: ['id'],
           },
           {
             model: User,
             as: 'Followers',
+            attributes: ['id'],
           },
         ],
       })
@@ -43,7 +82,7 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
   })(req, res, next)
 })
 
-router.post('/', isLoggedIn, async (req, res, next) => {
+router.post('/', isNotLoggedIn, async (req, res, next) => {
   try {
     const exUser = await User.findOne({
       where: {
@@ -63,11 +102,11 @@ router.post('/', isLoggedIn, async (req, res, next) => {
     res.status(201).send('ok')
   } catch (err) {
     console.log(err)
-    next(error)
+    next(err)
   }
 })
 
-router.post('/logout', isNotLoggedIn, (req, res) => {
+router.post('/logout', isLoggedIn, (req, res) => {
   req.logout()
   req.session.destroy()
   res.send('ok')

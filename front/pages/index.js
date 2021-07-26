@@ -4,6 +4,8 @@ import PostForm from '../components/PostForm'
 import PostCard from '../components/PostCard'
 import { useEffect } from 'react'
 import { LOAD_POST_REQUEST } from '../reducers/post'
+import { LOAD_MY_INFO_REQUEST } from '../reducers/user'
+
 const home = () => {
   const { me } = useSelector(state => state.user)
   const { mainPosts, hasMorePost, loadPostLoading } = useSelector(
@@ -14,7 +16,11 @@ const home = () => {
     dispatch({
       type: LOAD_POST_REQUEST,
     })
+    dispatch({
+      type: LOAD_MY_INFO_REQUEST,
+    })
   }, [])
+
   // scrollY : 내린 길이의 총합
   // clientHeight: 보이는 화면의 길이
   // scrollHeight: 브라우저 창의총 길이

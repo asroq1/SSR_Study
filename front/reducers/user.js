@@ -1,5 +1,8 @@
 import produce from 'immer'
 const initialState = {
+  loadMyInfoLoading: false,
+  loadMyInfoDone: false,
+  loadMyInfoError: false,
   //follow
   followLoading: false,
   followDone: false,
@@ -30,6 +33,10 @@ const initialState = {
 }
 
 //액션 변수
+export const LOAD_MY_INFO_REQUEST = 'LOAD_MY_INFO_REQUEST'
+export const LOAD_MY_INFO_SUCCESS = 'LOAD_MY_INFO_SUCCESS'
+export const LOAD_MY_INFO_FAILURE = 'LOAD_MY_INFO_FAILURE'
+
 export const LOG_IN_REQUEST = 'LOG_IN_REQUEST'
 export const LOG_IN_SUCCESS = 'LOG_IN_SUCCESS'
 export const LOG_IN_FAILURE = 'LOG_IN_FAILURE'
@@ -97,6 +104,22 @@ export const changeNicknameAction = data => {
 const reducer = (state = initialState, action) => {
   return produce(state, draft => {
     switch (action.type) {
+      case LOAD_MY_INFO_REQUEST:
+        draft.loadMyInfoLoading = true
+        draft.loadMyInfoDone = false
+        draft.loadMyInfoError = null
+        break
+      case LOAD_MY_INFO_SUCCESS:
+        draft.loadMyInfoLoading = false
+        draft.loadMyInfoDone = true
+        draft.loadMyInfoError = null
+        draft.me = action.data
+        break
+      case LOAD_MY_INFO_FAILURE:
+        draft.loadMyInfoLoading = false
+        draft.loadMyInfoDone = false
+        draft.loadMyInfoError = action.error
+        break
       case FOLLOW_REQUEST:
         draft.followLoading = true
         draft.followError = null

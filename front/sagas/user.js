@@ -4,6 +4,9 @@ import {
   FOLLOW_FAILURE,
   FOLLOW_REQUEST,
   FOLLOW_SUCCESS,
+  LOAD_MY_INFO_FAILURE,
+  LOAD_MY_INFO_REQUEST,
+  LOAD_MY_INFO_SUCCESS,
   LOG_IN_FAILURE,
   LOG_IN_REQUEST,
   LOG_IN_SUCCESS,
@@ -17,6 +20,26 @@ import {
   UNFOLLOW_REQUEST,
   UNFOLLOW_SUCCESS,
 } from '../reducers/user'
+
+function loadMyInfoAPI() {
+  return axios.get('/user')
+}
+
+function* loadMyInfo(action) {
+  try {
+    const result = yield call(loadMyInfoAPI, action.data)
+
+    yield put({
+      type: LOAD_MY_INFO_SUCCESS,
+      data: result.data,
+    })
+  } catch (error) {
+    yield put({
+      type: LOAD_MY_INFO_FAILURE,
+      error: error.response.data,
+    })
+  }
+}
 
 function loginAPI(data) {
   return axios.post('/user/login', data)
@@ -84,11 +107,11 @@ function followAPI() {
 
 function* follow(action) {
   try {
-    // const result = yield call(followAPI)
-    yield delay(1000)
+    const result = yield call(followAPI, action.data)
+
     yield put({
       type: FOLLOW_SUCCESS,
-      data: action.data,
+      data: result.data,
     })
   } catch (error) {
     //PUT은 Dispatch라고 생각하자
@@ -105,11 +128,10 @@ function unFollowAPI() {
 
 function* unFollow(action) {
   try {
-    // const result = yield call(unFollowAPI)
-    yield delay(1000)
+    const result = yield call(unFollowAPI, action.data)
     yield put({
       type: UNFOLLOW_SUCCESS,
-      data: action.data,
+      data: result.data,
     })
   } catch (error) {
     //PUT은 Dispatch라고 생각하자
@@ -122,7 +144,9 @@ function* unFollow(action) {
 function* watchLogIn() {
   yield takeLatest(LOG_IN_REQUEST, logIn)
 }
-
+function* watchLoadUser() {
+  yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo)
+}
 function* watchLogOut() {
   yield takeLatest(LOG_OUT_REQUEST, logOut)
 }
@@ -143,5 +167,6 @@ export default function* userSaga() {
     fork(watchSignUp),
     fork(watchFollow),
     fork(watchUnFollow),
+    fork(watchLoadUser),
   ])
 }

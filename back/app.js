@@ -1,7 +1,10 @@
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
+const postsRouter = require('./routes/posts')
 const postRouter = require('./routes/post')
 const userRouter = require('./routes/user')
+
 const cors = require('cors')
 const db = require('./models')
 const passportConfig = require('./passport')
@@ -18,6 +21,7 @@ db.sequelize
   })
   .catch(console.error)
 passportConfig()
+app.use(morgan('dev'))
 app.use(
   cors({
     origin: true,
@@ -45,24 +49,8 @@ app.get('/api', (req, res) => {
   res.send('hello api')
 })
 
-app.get('/posts', (req, res) => {
-  res.json([
-    {
-      id: 1,
-      content: ' hello',
-    },
-    {
-      id: 2,
-      content: ' hello',
-    },
-    {
-      id: 3,
-      content: ' hello',
-    },
-  ])
-})
-
 //How to set Prefix
+app.use('/posts', postsRouter)
 app.use('/post', postRouter)
 app.use('/user', userRouter)
 
