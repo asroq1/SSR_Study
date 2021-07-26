@@ -1,4 +1,12 @@
-import { all, fork, put, takeLatest, delay, throttle } from 'redux-saga/effects'
+import {
+  all,
+  fork,
+  put,
+  takeLatest,
+  delay,
+  throttle,
+  call,
+} from 'redux-saga/effects'
 import axios from 'axios'
 import shortId from 'shortid'
 import {
@@ -47,16 +55,16 @@ export default function* rootSaga() {
   }
 
   function* addPost(action) {
+    console.log('action', action)
     try {
       const result = yield call(addPostAPI, action.data)
-      const id = shortId.generate()
       yield put({
         type: ADD_POST_SUCCESS,
         data: result.data,
       })
       yield put({
         type: ADD_POST_TO_ME,
-        data: id,
+        data: result.data.id,
       })
     } catch (error) {
       //PUT은 Dispatch라고 생각하자
@@ -93,7 +101,9 @@ export default function* rootSaga() {
     }
   }
   function addCommentAPI(data) {
-    return axios.post(`/post/${data.postId}/comment`, data)
+    return axios.post(`/post/${data.postId}/comment`, data, {
+      withCredentials: true,
+    })
   }
 
   function* addComment(action) {

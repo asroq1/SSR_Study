@@ -31,7 +31,7 @@ const PostForm = () => {
         value={text}
         onChange={onChangeText}
         maxLength={140}
-        placeholder="어떤 신기한 일이 있었나요?"
+        placeholder="당신의 기분을 말해보세요."
       />
       <div>
         <input type="file" multiple hidden ref={imageInput} />

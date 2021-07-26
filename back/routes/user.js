@@ -1,12 +1,12 @@
 const express = require('express')
 const { User, Post } = require('../models')
-const { isLoggendIn, isNotLoggedIn } = require('./middlewares')
+const { isLoggedIn, isNotLoggedIn } = require('./middlewares')
 const bcrypt = require('bcrypt')
 const passport = require('passport')
 const router = express.Router()
 
-router.post('/login', (req, res, next) => {
-  passport.authenticate('local', isNotLoggedIn, (err, user, info) => {
+router.post('/login', isNotLoggedIn, (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
     if (err) {
       console.error(err)
       next(err)
@@ -43,7 +43,7 @@ router.post('/login', (req, res, next) => {
   })(req, res, next)
 })
 
-router.post('/', isLoggendIn, async (req, res, next) => {
+router.post('/', isLoggedIn, async (req, res, next) => {
   try {
     const exUser = await User.findOne({
       where: {
