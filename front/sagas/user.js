@@ -180,7 +180,7 @@ function loadFollowersAPI(data) {
 function* loadFollowers(action) {
   try {
     const result = yield call(loadFollowersAPI, action.data)
-    console.log('팔로워', result.data)
+    console.log('팔로워 Data', result.data)
     yield put({
       type: LOAD_FOLLOWERS_SUCCESS,
       data: result.data,
@@ -201,7 +201,7 @@ function loadFollwingsAPI(data) {
 function* loadFollwings(action) {
   try {
     const result = yield call(loadFollwingsAPI, action.data)
-    console.log('팔로잉', result.data)
+    console.log('팔로잉 Data', result.data)
     yield put({
       type: LOAD_FOLLOWINGS_SUCCESS,
       data: result.data,
