@@ -1,9 +1,18 @@
 import { all, fork, put, takeLatest, delay, call } from 'redux-saga/effects'
 import axios from 'axios'
 import {
+  CHANGE_NICKNAME_FAILURE,
+  CHANGE_NICKNAME_REQUEST,
+  CHANGE_NICKNAME_SUCCESS,
   FOLLOW_FAILURE,
   FOLLOW_REQUEST,
   FOLLOW_SUCCESS,
+  LOAD_FOLLOWERS_FAILURE,
+  LOAD_FOLLOWERS_REQUEST,
+  LOAD_FOLLOWERS_SUCCESS,
+  LOAD_FOLLOWINGS_FAILURE,
+  LOAD_FOLLOWINGS_REQUEST,
+  LOAD_FOLLOWINGS_SUCCESS,
   LOAD_MY_INFO_FAILURE,
   LOAD_MY_INFO_REQUEST,
   LOAD_MY_INFO_SUCCESS,
@@ -13,6 +22,9 @@ import {
   LOG_OUT_FAILURE,
   LOG_OUT_REQUEST,
   LOG_OUT_SUCCESS,
+  REMOVE_FOLLOWER_FAILURE,
+  REMOVE_FOLLOWER_REQUEST,
+  REMOVE_FOLLOWER_SUCCESS,
   SIGN_UP_FAILURE,
   SIGN_UP_REQUEST,
   SIGN_UP_SUCCESS,
@@ -28,7 +40,6 @@ function loadMyInfoAPI() {
 function* loadMyInfo(action) {
   try {
     const result = yield call(loadMyInfoAPI, action.data)
-
     yield put({
       type: LOAD_MY_INFO_SUCCESS,
       data: result.data,
@@ -48,7 +59,6 @@ function loginAPI(data) {
 function* logIn(action) {
   try {
     const result = yield call(loginAPI, action.data)
-    console.log('RES', result.data)
     yield put({
       type: LOG_IN_SUCCESS,
       data: result.data,
@@ -101,14 +111,14 @@ function* signUp(action) {
   }
 }
 
-function followAPI() {
-  return axios.post('/api/follow')
+function followAPI(data) {
+  return axios.patch(`/user/${data}/follow`)
 }
 
 function* follow(action) {
   try {
     const result = yield call(followAPI, action.data)
-
+    console.log('FOLLOW', result.data)
     yield put({
       type: FOLLOW_SUCCESS,
       data: result.data,
@@ -122,8 +132,8 @@ function* follow(action) {
   }
 }
 
-function unFollowAPI() {
-  return axios.post('/api/unfollow')
+function unFollowAPI(data) {
+  return axios.delete(`/user/${data}/follow`)
 }
 
 function* unFollow(action) {
@@ -134,12 +144,104 @@ function* unFollow(action) {
       data: result.data,
     })
   } catch (error) {
-    //PUT은 Dispatch라고 생각하자
+    console.error(error)
     yield put({
       type: UNFOLLOW_FAILURE,
       error: error.response.data,
     })
   }
+}
+
+function changeNicknameAPI(data) {
+  return axios.patch('/user/nickname', { nickname: data })
+}
+
+function* changeNickname(action) {
+  try {
+    const result = yield call(changeNicknameAPI, action.data)
+    console.log('nick Res', result.data)
+    yield put({
+      type: CHANGE_NICKNAME_SUCCESS,
+      data: result.data,
+    })
+  } catch (error) {
+    //PUT은 Dispatch라고 생각하자
+    yield put({
+      type: CHANGE_NICKNAME_FAILURE,
+      error: error.response.data,
+    })
+  }
+}
+
+function loadFollowersAPI(data) {
+  return axios.get('/user/followers', data)
+}
+
+function* loadFollowers(action) {
+  try {
+    const result = yield call(loadFollowersAPI, action.data)
+    console.log('팔로워', result.data)
+    yield put({
+      type: LOAD_FOLLOWERS_SUCCESS,
+      data: result.data,
+    })
+  } catch (error) {
+    //PUT은 Dispatch라고 생각하자
+    yield put({
+      type: LOAD_FOLLOWERS_FAILURE,
+      error: error.response.data,
+    })
+  }
+}
+
+function loadFollwingsAPI(data) {
+  return axios.get('/user/followings', data)
+}
+
+function* loadFollwings(action) {
+  try {
+    const result = yield call(loadFollwingsAPI, action.data)
+    console.log('팔로잉', result.data)
+    yield put({
+      type: LOAD_FOLLOWINGS_SUCCESS,
+      data: result.data,
+    })
+  } catch (error) {
+    //PUT은 Dispatch라고 생각하자
+    yield put({
+      type: LOAD_FOLLOWINGS_FAILURE,
+      error: error.response.data,
+    })
+  }
+}
+
+function removeFollowerAPI(data) {
+  return axios.delete(`/user/follower/${data}`)
+}
+
+function* removeFollower(action) {
+  try {
+    const result = yield call(removeFollowerAPI, action.data)
+    yield put({
+      type: REMOVE_FOLLOWER_SUCCESS,
+      data: result.data,
+    })
+  } catch (error) {
+    //PUT은 Dispatch라고 생각하자
+    yield put({
+      type: REMOVE_FOLLOWER_FAILURE,
+      error: error.response.data,
+    })
+  }
+}
+function* watchRemoveFollowers() {
+  yield takeLatest(REMOVE_FOLLOWER_REQUEST, removeFollower)
+}
+function* watchLoadFollowers() {
+  yield takeLatest(LOAD_FOLLOWERS_REQUEST, loadFollowers)
+}
+function* watchLoadFollowings() {
+  yield takeLatest(LOAD_FOLLOWINGS_REQUEST, loadFollwings)
 }
 function* watchLogIn() {
   yield takeLatest(LOG_IN_REQUEST, logIn)
@@ -160,13 +262,22 @@ function* watchUnFollow() {
   yield takeLatest(UNFOLLOW_REQUEST, unFollow)
 }
 
+function* watchChangeNickname() {
+  yield takeLatest(CHANGE_NICKNAME_REQUEST, changeNickname)
+}
+
 export default function* userSaga() {
   yield all([
+    fork(watchRemoveFollowers),
+    fork(watchLoadFollowers),
+    fork(watchLoadFollowings),
+    fork(watchLogIn),
     fork(watchLogIn),
     fork(watchLogOut),
     fork(watchSignUp),
     fork(watchFollow),
     fork(watchUnFollow),
     fork(watchLoadUser),
+    fork(watchChangeNickname),
   ])
 }

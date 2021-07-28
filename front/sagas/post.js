@@ -8,7 +8,6 @@ import {
   call,
 } from 'redux-saga/effects'
 import axios from 'axios'
-import shortId from 'shortid'
 import {
   ADD_COMMENT_FAILURE,
   ADD_COMMENT_REQUEST,
@@ -78,25 +77,24 @@ export default function* rootSaga() {
     }
   }
 
-  function removePostAPI(action) {
-    return axios.delete('/api/post', action.data)
+  function removePostAPI(data) {
+    return axios.delete(`/post/${data}`)
   }
 
   function* removePost(action) {
     try {
-      // const result = yield call(addPostAPI, action.data)
-      yield delay(1000)
-      const id = shortId.generate()
+      const result = yield call(removePostAPI, action.data)
       yield put({
         type: REMOVE_POST_SUCCESS,
-        data: action.data,
+        data: result.data,
       })
       yield put({
         type: REMOVE_POST_OF_ME,
-        data: action.data,
+        data: result.data,
       })
     } catch (error) {
       //PUT은 Dispatch라고 생각하자
+      console.error(error)
       yield put({
         type: REMOVE_POST_FAILURE,
         data: error.response.data,

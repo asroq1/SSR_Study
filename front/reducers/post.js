@@ -137,7 +137,6 @@ const reducer = (state = initialState, action) => {
         draft.removePostError = null
         break
       case REMOVE_POST_FAILURE:
-        draft.mainPosts = [dummyPost, ...state.mainPosts]
         draft.removeCommentDone = false
         draft.removeCommentLoading = false
         draft.removeCommentError = action.error
