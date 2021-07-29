@@ -186,7 +186,7 @@ function* loadFollowers(action) {
       data: result.data,
     })
   } catch (error) {
-    //PUT은 Dispatch라고 생각하자
+    //PUT은 Dispatchy라고 생각하자
     yield put({
       type: LOAD_FOLLOWERS_FAILURE,
       error: error.response.data,

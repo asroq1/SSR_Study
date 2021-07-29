@@ -27,6 +27,9 @@ import {
   UNLIKE_POST_FAILURE,
   UNLIKE_POST_REQUEST,
   UNLIKE_POST_SUCCESS,
+  UPLOAD_IMAGES_FAILURE,
+  UPLOAD_IMAGES_REQUEST,
+  UPLOAD_IMAGES_SUCCESS,
 } from '../reducers/post'
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user'
 
@@ -159,6 +162,29 @@ export default function* rootSaga() {
     }
   }
 
+  function uploadImagesAPI(data) {
+    return axios.post(`/post/images`, data)
+  }
+
+  function* uploadImages(action) {
+    try {
+      const result = yield call(uploadImagesAPI, action.data)
+      console.log('ResultImg', result)
+      yield put({
+        type: UPLOAD_IMAGES_SUCCESS,
+        data: result.data,
+      })
+    } catch (error) {
+      console.error(error),
+        yield put({
+          type: UPLOAD_IMAGES_FAILURE,
+          data: error.response.data,
+        })
+    }
+  }
+  function* watchUploadImages() {
+    yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages)
+  }
   function* watchLikePost() {
     yield takeLatest(LIKE_POST_REQUEST, likePost)
   }
@@ -180,6 +206,7 @@ export default function* rootSaga() {
     yield throttle(2000, LOAD_POST_REQUEST, loadPost)
   }
   yield all([
+    fork(watchUploadImages),
     fork(watchRemovePost),
     fork(watchAddPost),
     fork(watchAddComment),
