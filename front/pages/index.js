@@ -8,7 +8,7 @@ import { LOAD_MY_INFO_REQUEST } from '../reducers/user'
 
 const home = () => {
   const { me } = useSelector(state => state.user)
-  const { mainPosts, hasMorePost, loadPostLoading } = useSelector(
+  const { mainPosts, hasMorePost, loadPostLoading, retweetError } = useSelector(
     state => state.post
   )
   const dispatch = useDispatch()
@@ -20,6 +20,12 @@ const home = () => {
       type: LOAD_MY_INFO_REQUEST,
     })
   }, [])
+
+  useEffect(() => {
+    if (retweetError) {
+      alert(retweetError)
+    }
+  }, [retweetError])
 
   // scrollY : 내린 길이의 총합
   // clientHeight: 보이는 화면의 길이

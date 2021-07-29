@@ -24,6 +24,9 @@ import {
   REMOVE_POST_FAILURE,
   REMOVE_POST_REQUEST,
   REMOVE_POST_SUCCESS,
+  RETWEET_POST_FAILURE,
+  RETWEET_POST_REQUEST,
+  RETWEET_POST_SUCCESS,
   UNLIKE_POST_FAILURE,
   UNLIKE_POST_REQUEST,
   UNLIKE_POST_SUCCESS,
@@ -50,7 +53,7 @@ export default function* rootSaga() {
       //PUT은 Dispatch라고 생각하자
       yield put({
         type: LOAD_POST_FAILURE,
-        data: error.response.data,
+        error: error.response.data,
       })
     }
   }
@@ -75,7 +78,7 @@ export default function* rootSaga() {
       //PUT은 Dispatch라고 생각하자
       yield put({
         type: ADD_POST_FAILURE,
-        data: error.response.data,
+        error: error.response.data,
       })
     }
   }
@@ -100,7 +103,7 @@ export default function* rootSaga() {
       console.error(error)
       yield put({
         type: REMOVE_POST_FAILURE,
-        data: error.response.data,
+        error: error.response.data,
       })
     }
   }
@@ -119,7 +122,7 @@ export default function* rootSaga() {
     } catch (error) {
       yield put({
         type: ADD_COMMENT_FAILURE,
-        data: error.response.data,
+        error: error.response.data,
       })
     }
   }
@@ -138,7 +141,7 @@ export default function* rootSaga() {
       console.error(error),
         yield put({
           type: LIKE_POST_FAILURE,
-          data: error.response.data,
+          error: error.response.data,
         })
     }
   }
@@ -157,7 +160,7 @@ export default function* rootSaga() {
       console.error(error),
         yield put({
           type: UNLIKE_POST_FAILURE,
-          data: error.response.data,
+          error: error.response.data,
         })
     }
   }
@@ -178,9 +181,32 @@ export default function* rootSaga() {
       console.error(error),
         yield put({
           type: UPLOAD_IMAGES_FAILURE,
-          data: error.response.data,
+          error: error.response.data,
         })
     }
+  }
+  function retweetAPI(data) {
+    return axios.post(`/post/${data}/retweet`)
+  }
+
+  function* retweet(action) {
+    try {
+      const result = yield call(retweetAPI, action.data)
+      console.log('RES', result.data)
+      yield put({
+        type: RETWEET_POST_SUCCESS,
+        data: result.data,
+      })
+    } catch (error) {
+      console.error(error),
+        yield put({
+          type: RETWEET_POST_FAILURE,
+          error: error.response.data,
+        })
+    }
+  }
+  function* watchRetweet() {
+    yield takeLatest(RETWEET_POST_REQUEST, retweet)
   }
   function* watchUploadImages() {
     yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages)
@@ -206,6 +232,7 @@ export default function* rootSaga() {
     yield throttle(2000, LOAD_POST_REQUEST, loadPost)
   }
   yield all([
+    fork(watchRetweet),
     fork(watchUploadImages),
     fork(watchRemovePost),
     fork(watchAddPost),

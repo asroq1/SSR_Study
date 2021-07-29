@@ -1,5 +1,6 @@
 import shortId from 'shortid'
 import produce from 'immer'
+import { REMOVE_FOLLOWER_FAILURE } from './user'
 
 export const initialState = {
   likePostLoading: false,
@@ -26,6 +27,9 @@ export const initialState = {
   uploadImagesLoading: false,
   uploadImagesDone: false,
   uploadImagesError: null,
+  retweetLoading: false,
+  retweetDone: false,
+  retweetError: null,
 }
 export const UPLOAD_IMAGES_REQUEST = 'UPLOAD_IMAGES_REQUEST'
 export const UPLOAD_IMAGES_SUCCESS = 'UPLOAD_IMAGES_SUCCESS'
@@ -57,6 +61,10 @@ export const ADD_COMMENT_FAILURE = 'ADD_COMMENT_FAILURE'
 
 export const REMOVE_IMAGE = 'REMOVE_IMAGE'
 
+export const RETWEET_POST_REQUEST = 'RETWEET_POST_REQUEST'
+export const RETWEET_POST_SUCCESS = 'RETWEET_POST_SUCCESS'
+export const RETWEET_POST_FAILURE = 'RETWEET_POST_FAILURE'
+
 export const addPost = data => ({
   type: ADD_POST_REQUEST,
   data,
@@ -70,6 +78,22 @@ export const addComment = data => ({
 const reducer = (state = initialState, action) => {
   return produce(state, draft => {
     switch (action.type) {
+      case RETWEET_POST_REQUEST:
+        draft.retweetLoading = true
+        draft.retweetDone = false
+        draft.retweetError = null
+        break
+      case RETWEET_POST_SUCCESS:
+        draft.mainPosts.unshift(action.data)
+        draft.retweetLoading = false
+        draft.retweetDone = true
+        draft.retweetError = null
+        break
+      case RETWEET_POST_FAILURE:
+        draft.retweetLoading = false
+        draft.retweetDone = false
+        draft.retweetError = action.error
+        break
       case REMOVE_IMAGE:
         draft.imagePaths = draft.imagePaths.filter((v, i) => i !== action.data)
         break
