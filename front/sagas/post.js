@@ -56,7 +56,7 @@ export default function* rootSaga() {
   }
 
   function addPostAPI(data) {
-    return axios.post('/post', { content: data })
+    return axios.post('/post', data)
   }
 
   function* addPost(action) {

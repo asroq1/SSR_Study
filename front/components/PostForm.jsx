@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   addPost,
   ADD_POST_REQUEST,
+  REMOVE_IMAGE,
   UPLOAD_IMAGES_REQUEST,
 } from '../reducers/post'
 import useInput from '../hooks/useInput'
@@ -48,7 +49,12 @@ const PostForm = () => {
       data: formData,
     })
   }, [text, imagePaths])
-
+  const onRemoveImage = useCallback(i => () => {
+    dispatch({
+      type: REMOVE_IMAGE,
+      data: i,
+    })
+  })
   return (
     <Form
       style={{ margin: '10px 0 20px' }}
@@ -84,7 +90,7 @@ const PostForm = () => {
               alt={v}
             />
             <div>
-              <Button>제거</Button>
+              <Button onClick={onRemoveImage(i)}>제거</Button>
             </div>
           </div>
         ))}
