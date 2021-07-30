@@ -8,10 +8,11 @@ import { LOAD_MY_INFO_REQUEST } from '../reducers/user'
 
 const home = () => {
   const { me } = useSelector(state => state.user)
+  const dispatch = useDispatch()
   const { mainPosts, hasMorePost, loadPostLoading, retweetError } = useSelector(
     state => state.post
   )
-  const dispatch = useDispatch()
+
   useEffect(() => {
     dispatch({
       type: LOAD_POST_REQUEST,
@@ -33,12 +34,15 @@ const home = () => {
   useEffect(() => {
     function onScroll() {
       if (
-        window.scrollY + document.documentElement.clientHeight >
+        window.pageYOffset + document.documentElement.clientHeight >
         document.documentElement.scrollHeight - 300
       ) {
         if (hasMorePost && !loadPostLoading) {
+          console.log('ON Scroll In')
+          const lastId = mainPosts[mainPosts.length - 1]?.id
           dispatch({
             type: LOAD_POST_REQUEST,
+            lastId,
           })
         }
       }
@@ -47,7 +51,8 @@ const home = () => {
     return () => {
       window.removeEventListener('scroll', onScroll)
     }
-  }, [hasMorePost, loadPostLoading])
+  }, [hasMorePost, loadPostLoading, mainPosts])
+
   return (
     <AppLayout>
       {me && <PostForm />}
