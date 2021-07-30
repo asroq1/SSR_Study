@@ -11,9 +11,13 @@ export const initialState = {
   unlikePostError: null,
   imagePaths: [],
   mainPosts: [],
+  singlePost: null,
   loadPostDone: false,
   loadPostLoading: false,
   loadPostError: null,
+  loadSinglePostLoading: false,
+  loadSinglePostDone: false,
+  loadSinglePostError: null,
   addPostDone: false,
   addPostLoading: false,
   addPostError: null,
@@ -65,6 +69,10 @@ export const RETWEET_POST_REQUEST = 'RETWEET_POST_REQUEST'
 export const RETWEET_POST_SUCCESS = 'RETWEET_POST_SUCCESS'
 export const RETWEET_POST_FAILURE = 'RETWEET_POST_FAILURE'
 
+export const LOAD_SINGLE_POST_REQUEST = 'LOAD_SINGLE_POST_REQUEST'
+export const LOAD_SINGLE_POST_SUCCESS = 'LOAD_SINGLE_POST_SUCCESS'
+export const LOAD_SINGLE_POST_FAILURE = 'LOAD_SINGLE_POST_FAILURE'
+
 export const addPost = data => ({
   type: ADD_POST_REQUEST,
   data,
@@ -78,6 +86,22 @@ export const addComment = data => ({
 const reducer = (state = initialState, action) => {
   return produce(state, draft => {
     switch (action.type) {
+      case LOAD_SINGLE_POST_REQUEST:
+        draft.loadSinglePostLoading = false
+        draft.loadSinglePostDone = false
+        draft.loadSinglePostError = null
+        break
+      case LOAD_SINGLE_POST_SUCCESS:
+        draft.singlePost = action.data
+        draft.loadSinglePostLoading = false
+        draft.loadSinglePostDone = true
+        draft.loadSinglePostError = null
+        break
+      case LOAD_SINGLE_POST_FAILURE:
+        draft.loadSinglePostLoading = false
+        draft.loadSinglePostDone = false
+        draft.loadSinglePostError = action.error
+        break
       case RETWEET_POST_REQUEST:
         draft.retweetLoading = true
         draft.retweetDone = false

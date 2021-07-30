@@ -23,7 +23,6 @@ const PostCard = ({ post }) => {
   const { me } = useSelector(state => state.user)
   const { removePostLoading } = useSelector(state => state.post)
   const id = me && me.id
-  const liked = post.Likers.find(v => v.id === id)
   const [commentFormOpen, setCommentFormOpen] = useState(false)
   const dispatch = useDispatch()
 
@@ -74,6 +73,7 @@ const PostCard = ({ post }) => {
       data: post.id,
     })
   }, [id])
+  const liked = post.Likers.find(v => v.id === id)
   return (
     <div style={{ marginBottom: 10 }}>
       <Card
@@ -166,20 +166,6 @@ const PostCard = ({ post }) => {
 			<Comments /> */}
     </div>
   )
-}
-
-PostCard.propTypes = {
-  post: PropTypes.shape({
-    id: PropTypes.number,
-    User: PropTypes.object,
-    UserId: PropTypes.number,
-    content: PropTypes.string,
-    createAt: PropTypes.string,
-    Comments: PropTypes.arrayOf(PropTypes.any),
-    Images: PropTypes.arrayOf(PropTypes.any),
-    Likers: PropTypes.arrayOf(PropTypes.object),
-    RetweetId: PropTypes.objectOf(PropTypes.any),
-  }).isRequired,
 }
 
 export default PostCard

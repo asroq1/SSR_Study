@@ -21,6 +21,9 @@ import {
   LOAD_POST_FAILURE,
   LOAD_POST_REQUEST,
   LOAD_POST_SUCCESS,
+  LOAD_SINGLE_POST_FAILURE,
+  LOAD_SINGLE_POST_REQUEST,
+  LOAD_SINGLE_POST_SUCCESS,
   REMOVE_POST_FAILURE,
   REMOVE_POST_REQUEST,
   REMOVE_POST_SUCCESS,
@@ -52,7 +55,26 @@ export default function* rootSaga() {
       console.error(err)
       yield put({
         type: LOAD_POST_FAILURE,
-        error: err.response.data,
+        error: err.name,
+      })
+    }
+  }
+  function singlePostAPI(data) {
+    return axios.get(`/post/${data}`)
+  }
+
+  function* singlePost(action) {
+    try {
+      const result = yield call(singlePostAPI, action.lastId)
+      yield put({
+        type: LOAD_SINGLE_POST_SUCCESS,
+        data: result.data,
+      })
+    } catch (err) {
+      console.error(err)
+      yield put({
+        type: LOAD_SINGLE_POST_FAILURE,
+        error: err.name,
       })
     }
   }
@@ -204,6 +226,9 @@ export default function* rootSaga() {
         })
     }
   }
+  function* watchSinglePost() {
+    yield takeLatest(LOAD_SINGLE_POST_REQUEST, singlePost)
+  }
   function* watchRetweet() {
     yield takeLatest(RETWEET_POST_REQUEST, retweet)
   }
@@ -231,6 +256,7 @@ export default function* rootSaga() {
     yield throttle(2000, LOAD_POST_REQUEST, loadPost)
   }
   yield all([
+    fork(watchSinglePost),
     fork(watchRetweet),
     fork(watchUploadImages),
     fork(watchRemovePost),

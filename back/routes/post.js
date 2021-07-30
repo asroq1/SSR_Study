@@ -93,7 +93,41 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
     next(err)
   }
 })
-
+router.get('/:postId', async (req, res, next) => {
+  try {
+    const post = await Post.findOne({
+      where: { id: req.params.postId },
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'nickname'],
+        },
+        {
+          model: Image,
+        },
+        {
+          model: Comment,
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'nickname'],
+              order: [['createdAt', 'DESC']],
+            },
+          ],
+        },
+        {
+          model: User, // 좋아요 누른 사람
+          as: 'Likers',
+          attributes: ['id'],
+        },
+      ],
+    })
+    res.status(200).json(post)
+  } catch (error) {
+    console.error(error)
+    next(error)
+  }
+})
 router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
   //POST /post/?/comment
   try {
@@ -122,6 +156,69 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
   } catch (err) {
     console.error(err)
     next(err)
+  }
+})
+router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
+  // POST /post
+  try {
+    const hashtags = req.body.content.match(/#[^\s#]+/g)
+    const post = await Post.create({
+      content: req.body.content,
+      UserId: req.user.id,
+    })
+    if (hashtags) {
+      const result = await Promise.all(
+        hashtags.map(tag =>
+          Hashtag.findOrCreate({
+            where: { name: tag.slice(1).toLowerCase() },
+          })
+        )
+      ) // [[노드, true], [리액트, true]]
+      await post.addHashtags(result.map(v => v[0]))
+    }
+    if (req.body.image) {
+      if (Array.isArray(req.body.image)) {
+        // 이미지를 여러 개 올리면 image: [제로초.png, 부기초.png]
+        const images = await Promise.all(
+          req.body.image.map(image => Image.create({ src: image }))
+        )
+        await post.addImages(images)
+      } else {
+        // 이미지를 하나만 올리면 image: 제로초.png
+        const image = await Image.create({ src: req.body.image })
+        await post.addImages(image)
+      }
+    }
+    const fullPost = await Post.findOne({
+      where: { id: post.id },
+      include: [
+        {
+          model: Image,
+        },
+        {
+          model: Comment,
+          include: [
+            {
+              model: User, // 댓글 작성자
+              attributes: ['id', 'nickname'],
+            },
+          ],
+        },
+        {
+          model: User, // 게시글 작성자
+          attributes: ['id', 'nickname'],
+        },
+        {
+          model: User, // 좋아요 누른 사람
+          as: 'Likers',
+          attributes: ['id'],
+        },
+      ],
+    })
+    res.status(201).json(fullPost)
+  } catch (error) {
+    console.error(error)
+    next(error)
   }
 })
 

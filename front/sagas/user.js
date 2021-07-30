@@ -47,7 +47,7 @@ function* loadMyInfo(action) {
   } catch (error) {
     yield put({
       type: LOAD_MY_INFO_FAILURE,
-      error: error.response.data,
+      error: error.name,
     })
   }
 }
